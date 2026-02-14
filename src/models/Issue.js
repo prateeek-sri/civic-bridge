@@ -16,6 +16,8 @@ const issueSchema = new mongoose.Schema({
   location: {
     lat: { type: Number, default: null },
     lng: { type: Number, default: null },
+    city: { type: String, default: null },
+    state: { type: String, default: null },
   },
   status: { type: String, required: true },
   upvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

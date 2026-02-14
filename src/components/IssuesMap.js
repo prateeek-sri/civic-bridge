@@ -7,7 +7,7 @@ const IssuesMapClient = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-96 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500">
+      <div className="h-96 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
         Loading map…
       </div>
     ),

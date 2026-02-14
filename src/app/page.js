@@ -16,17 +16,17 @@ import {
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* --- HERO SECTION --- */}
       <section className="relative pt-20 pb-32 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-foreground mb-6 tracking-tight">
             Report Issues, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-blue-600">
               Transform Your Community
             </span>
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             CivicBridge unites residents and local authorities by providing 
             real-time issue tracking. Report potholes, faulty lighting, and more to 
             drive direct community improvement.
@@ -41,25 +41,25 @@ export default function Home() {
             </Link>
             <Link
               href="https://www.google.com/maps"
-              className="bg-white border-2 border-slate-200 hover:border-emerald-500 text-slate-700 px-8 py-4 rounded-full font-bold transition flex items-center gap-2"
+              className="bg-secondary border-2 border-border hover:border-emerald-500 text-foreground px-8 py-4 rounded-full font-bold transition flex items-center gap-2"
             >
               <Globe className="w-5 h-5 text-emerald-500" /> View Map
             </Link>
           </div>
 
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-4xl mx-auto border-t border-slate-100 pt-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-4xl mx-auto border-t border-border pt-12">
             <div>
-              <p className="text-3xl font-bold text-blue-600">4,281</p>
-              <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Issues Reported</p>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">4,281</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Issues Reported</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-emerald-500">12,439</p>
-              <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Lives Impacted</p>
+              <p className="text-3xl font-bold text-emerald-500 dark:text-emerald-400">12,439</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Lives Impacted</p>
             </div>
             <div className="col-span-2 md:col-span-1">
-              <p className="text-3xl font-bold text-slate-800">415</p>
-              <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest">Communities</p>
+              <p className="text-3xl font-bold text-foreground">415</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">Communities</p>
             </div>
           </div>
         </div>
@@ -82,11 +82,11 @@ export default function Home() {
       </section>
 
       {/* --- "WHAT CAN YOU REPORT" SECTION --- */}
-      <section className="bg-slate-50 py-24">
+      <section className="bg-muted/50 py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">What Can You Report?</h2>
-            <p className="text-slate-500">Our platform covers a wide range of civic issues to help keep your community safe.</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">What Can You Report?</h2>
+            <p className="text-muted-foreground">Our platform covers a wide range of civic issues to help keep your community safe.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -96,16 +96,16 @@ export default function Home() {
               { title: "Waste Management", icon: <Trash2 />, img: "https://images.unsplash.com/photo-1532996122724-e3c3c5dca325?auto=format&fit=crop&q=60&w=800", desc: "Issues with garbage collection or illegal dumping sites." },
               { title: "Public Facilities", icon: <Factory />, img: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=60&w=800", desc: "Damaged park equipment, benches, or public restrooms." },
             ].map((item, idx) => (
-              <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-shadow group">
+              <div key={idx} className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border hover:shadow-xl transition-shadow group">
                 <div className="h-40 relative">
                   <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
-                  <div className="absolute top-4 left-4 bg-white p-2 rounded-lg shadow-md">
+                  <div className="absolute top-4 left-4 bg-card p-2 rounded-lg shadow-md">
                     {React.cloneElement(item.icon, { className: "w-5 h-5 text-blue-600" })}
                   </div>
                 </div>
                 <div className="p-6">
-                  <h4 className="font-bold text-slate-900 mb-2">{item.title}</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                  <h4 className="font-bold text-card-foreground mb-2">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}

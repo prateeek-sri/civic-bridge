@@ -38,14 +38,14 @@ export default function IssuesMapClient({ issues }) {
 
   if (!mounted) {
     return (
-      <div className="h-96 bg-slate-200 rounded-lg flex items-center justify-center text-slate-500">
+      <div className="h-96 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
         Loading map…
       </div>
     );
   }
 
   return (
-    <div className="h-96 rounded-lg overflow-hidden border border-slate-200 z-0">
+    <div className="h-96 rounded-lg overflow-hidden border border-border z-0">
       <MapContainer
         center={defaultCenter}
         zoom={withLocation.length ? 12 : 4}

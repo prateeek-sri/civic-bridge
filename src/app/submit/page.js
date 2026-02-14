@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const LocationPickerMap = dynamic(
+  () => import("@/components/LocationPickerMap"),
+  { ssr: false }
+);
 
 const CATEGORIES = [
   "Roads & Streets",
@@ -23,8 +29,8 @@ export default function SubmitPage() {
   const [category, setCategory] = useState("");
   const [severity, setSeverity] = useState("Medium");
   const [image, setImage] = useState("");
-  const [lat, setLat] = useState("");
-  const [lng, setLng] = useState("");
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -61,8 +67,8 @@ export default function SubmitPage() {
           category: category || "Other",
           severity,
           image: image || null,
-          lat: lat ? parseFloat(lat) : null,
-          lng: lng ? parseFloat(lng) : null,
+          lat: lat != null ? Number(lat) : null,
+          lng: lng != null ? Number(lng) : null,
         }),
       });
       const data = await res.json();
@@ -79,10 +85,12 @@ export default function SubmitPage() {
     }
   }
 
+  const inputClass = "w-full border border-input bg-background rounded-lg px-3 py-2 focus:ring-2 focus:ring-ring focus:border-primary";
+
   if (user === null) {
     return (
-      <p className="text-slate-500">
-        Loading… or <Link href="/login" className="text-blue-600 underline">log in</Link> as a resident to report an issue.
+      <p className="text-muted-foreground">
+        Loading… or <Link href="/login" className="text-primary underline">log in</Link> as a resident to report an issue.
       </p>
     );
   }
@@ -90,46 +98,29 @@ export default function SubmitPage() {
   if (!user) {
     return (
       <div className="max-w-md mx-auto text-center">
-        <p className="text-slate-600 mb-4">You must be logged in as a resident to report an issue.</p>
-        <Link href="/login" className="text-blue-600 hover:underline">Log in</Link>
+        <p className="text-muted-foreground mb-4">You must be logged in as a resident to report an issue.</p>
+        <Link href="/login" className="text-primary hover:underline">Log in</Link>
         {" · "}
-        <Link href="/register" className="text-blue-600 hover:underline">Register</Link>
+        <Link href="/register" className="text-primary hover:underline">Register</Link>
       </div>
     );
   }
 
   return (
     <div className="max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">Report an issue</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">Report an issue</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          />
+          <label className="block text-sm font-medium text-foreground mb-1">Title *</label>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} required />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Description *</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          />
+          <label className="block text-sm font-medium text-foreground mb-1">Description *</label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className={inputClass} required />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Category *</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          >
+          <label className="block text-sm font-medium text-foreground mb-1">Category *</label>
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass} required>
             <option value="">Select…</option>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -137,58 +128,33 @@ export default function SubmitPage() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Severity *</label>
-          <select
-            value={severity}
-            onChange={(e) => setSeverity(e.target.value)}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
+          <label className="block text-sm font-medium text-foreground mb-1">Severity *</label>
+          <select value={severity} onChange={(e) => setSeverity(e.target.value)} className={inputClass}>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Image (optional)</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2"
-          />
+          <label className="block text-sm font-medium text-foreground mb-1">Image (optional)</label>
+          <input type="file" accept="image/*" onChange={handleFileChange} className="w-full border border-input bg-background rounded-lg px-3 py-2" />
           {image && (
-            <img src={image} alt="Preview" className="mt-2 max-h-32 rounded border border-slate-200" />
+            <img src={image} alt="Preview" className="mt-2 max-h-32 rounded border border-border" />
           )}
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Latitude (optional)</label>
-            <input
-              type="number"
-              step="any"
-              value={lat}
-              onChange={(e) => setLat(e.target.value)}
-              placeholder="e.g. 40.7128"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Longitude (optional)</label>
-            <input
-              type="number"
-              step="any"
-              value={lng}
-              onChange={(e) => setLng(e.target.value)}
-              placeholder="e.g. -74.0060"
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-        {error && <p className="text-red-600 text-sm">{error}</p>}
+        <LocationPickerMap
+          lat={lat}
+          lng={lng}
+          onLocationSelect={(newLat, newLng) => {
+            setLat(newLat);
+            setLng(newLng);
+          }}
+        />
+        {error && <p className="text-destructive text-sm">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white py-2 rounded-lg font-medium transition"
+          className="w-full bg-primary hover:bg-primary/90 disabled:opacity-50 text-primary-foreground py-2 rounded-lg font-medium transition"
         >
           {loading ? "Submitting…" : "Submit issue"}
         </button>

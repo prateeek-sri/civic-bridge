@@ -23,14 +23,14 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
 
   return (
     <Link href={`/issue/${issue._id}`} className="block w-full">
-      <Card className="group relative overflow-hidden transition-all hover:shadow-md hover:border-primary/30 border-slate-200 bg-white">
+      <Card className="group relative overflow-hidden transition-all hover:shadow-md hover:border-primary/30 border-border bg-card">
         {/* STRICT FIXED HEIGHT: h-[165px] 
             This ensures every card in your grid is identical.
         */}
         <div className="flex flex-row h-[165px]">
           
           {/* LEFT SIDE: Image */}
-          <div className="relative w-32 sm:w-52 shrink-0 bg-slate-100 overflow-hidden border-r">
+          <div className="relative w-32 sm:w-52 shrink-0 bg-muted overflow-hidden border-r border-border">
             {issue.image ? (
               <img
                 src={issue.image}
@@ -38,7 +38,7 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
                 className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-slate-300">
+              <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                 <MapPin className="h-8 w-8 opacity-20" />
               </div>
             )}
@@ -67,8 +67,8 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
                    h-12 and overflow-hidden ensures that if tags wrap to a 3rd line, 
                    they don't push the footer down.
                 */}
-                <div className="flex flex-wrap items-center gap-1.5 h-[48px] overflow-hidden content-start">
-                  <Badge variant="secondary" className="text-[10px] font-normal px-2 bg-slate-100 whitespace-nowrap">
+                <div className="flex pb-3 flex-wrap items-center gap-1.5 h-[48px] overflow-hidden content-start">
+                  <Badge variant="secondary" className="text-[10px] font-normal px-2 bg-muted text-muted-foreground whitespace-nowrap">
                     {issue.category}
                   </Badge>
                   <SeverityBadge severity={issue.severity} />
@@ -80,7 +80,7 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
               <div className="mt-auto">
                 <div className="flex items-center justify-between text-sm text-muted-foreground pb-2">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                    <span className="flex items-center gap-1.5 font-medium text-foreground">
                       <ThumbsUp className="h-3.5 w-3.5" />
                       {issue.upvoteCount || 0}
                     </span>
@@ -96,16 +96,16 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
                     )}
                   </div>
 
-                  {issue.location && (
-                    <span className="hidden xl:flex items-center gap-1 text-[10px] opacity-70">
-                      <MapPin className="h-3 w-3" />
-                      {issue.location.lat.toFixed(1)}, {issue.location.lng.toFixed(1)}
+                  {(issue.location?.city || issue.location?.state) && (
+                    <span className="flex items-center gap-1 text-[10px] opacity-70 truncate max-w-[120px] sm:max-w-[160px]">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      {[issue.location.city, issue.location.state].filter(Boolean).join(", ")}
                     </span>
                   )}
                 </div>
 
-                <p className="text-[10px] text-muted-foreground border-t border-slate-100 pt-2 truncate">
-                  Reported by <span className="font-medium text-slate-600">{creatorName}</span> &middot; {new Date(issue.createdAt).toLocaleDateString("en-US", {
+                <p className="text-[10px] text-muted-foreground border-t border-border pt-2 truncate">
+                  Reported by <span className="font-medium text-foreground">{creatorName}</span> &middot; {new Date(issue.createdAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Issue from "@/models/Issue";
 import { getSessionFromCookie } from "@/lib/auth";
+import { reverseGeocode } from "@/lib/geocode";
 
 export async function GET(request) {
   try {
@@ -33,13 +34,41 @@ export async function GET(request) {
       .populate("createdBy", "name")
       .lean();
 
-    const withCounts = issues.map((i) => ({
+    let withCounts = issues.map((i) => ({
       ...i,
       _id: i._id.toString(),
       createdBy: i.createdBy ? { _id: i.createdBy._id.toString(), name: i.createdBy.name } : null,
       upvoteCount: (i.upvotes || []).length,
       upvotes: undefined,
     }));
+
+    // Backfill city/state for issues with lat/lng but no city/state (Nominatim: 1 req/sec)
+    const needsBackfill = withCounts.filter(
+      (i) =>
+        i.location?.lat != null &&
+        i.location?.lng != null &&
+        !i.location?.city &&
+        !i.location?.state
+    );
+    const MAX_BACKFILL_PER_REQUEST = 5;
+    for (let idx = 0; idx < Math.min(needsBackfill.length, MAX_BACKFILL_PER_REQUEST); idx++) {
+      const issue = needsBackfill[idx];
+      const geo = await reverseGeocode(issue.location.lat, issue.location.lng);
+      if (geo.city || geo.state) {
+        await Issue.updateOne(
+          { _id: issue._id },
+          { $set: { "location.city": geo.city, "location.state": geo.state } }
+        );
+        const match = withCounts.find((w) => w._id === issue._id);
+        if (match && match.location) {
+          match.location.city = geo.city;
+          match.location.state = geo.state;
+        }
+      }
+      if (idx < needsBackfill.length - 1) {
+        await new Promise((r) => setTimeout(r, 1100));
+      }
+    }
 
     return NextResponse.json(withCounts);
   } catch (err) {
@@ -86,6 +115,14 @@ export async function POST(request) {
     await connectDB();
     const IssueModel = (await import("@/models/Issue")).default;
 
+    let city = null;
+    let state = null;
+    if (lat != null && lng != null) {
+      const geo = await reverseGeocode(Number(lat), Number(lng));
+      city = geo.city;
+      state = geo.state;
+    }
+
     const issue = await IssueModel.create({
       title: title.trim(),
       description: description.trim(),
@@ -95,6 +132,8 @@ export async function POST(request) {
       location: {
         lat: lat != null ? Number(lat) : null,
         lng: lng != null ? Number(lng) : null,
+        city,
+        state,
       },
       status: "Submitted",
       upvotes: [],

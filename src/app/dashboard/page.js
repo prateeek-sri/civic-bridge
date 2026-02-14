@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { IssueCard } from "@/components/IssueCard";
 import { Button } from "@/components/ui/button";
@@ -22,10 +23,30 @@ const fetcher = async (url) => {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [category, setCategory] = useState("all");
   const [severity, setSeverity] = useState("all");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("newest");
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/session", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        setAuthChecked(true);
+        if (data?.user) {
+          setIsAuthenticated(true);
+        } else {
+          router.replace("/login?redirect=/dashboard");
+        }
+      })
+      .catch(() => {
+        setAuthChecked(true);
+        router.replace("/login?redirect=/dashboard");
+      });
+  }, [router]);
 
   const params = new URLSearchParams();
   if (category && category !== "all") params.set("category", category);
@@ -44,6 +65,14 @@ export default function DashboardPage() {
 
   const maxUpvotes =
     issues.length > 0 ? Math.max(...issues.map((i) => i.upvoteCount || 0)) : 0;
+
+  if (!authChecked || !isAuthenticated) {
+    return (
+      <main className="mx-auto max-w-7xl px-4 py-8 flex items-center justify-center min-h-[40vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">

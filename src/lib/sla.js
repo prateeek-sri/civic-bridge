@@ -24,12 +24,12 @@ export function getSlaInfo(createdAt) {
 export function getSlaColorClass(color) {
   switch (color) {
     case "green":
-      return "bg-green-100 text-green-800 border-green-200";
+      return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800";
     case "yellow":
-      return "bg-amber-100 text-amber-800 border-amber-200";
+      return "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800";
     case "red":
-      return "bg-red-100 text-red-800 border-red-200";
+      return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800";
     default:
-      return "bg-slate-100 text-slate-600 border-slate-200";
+      return "bg-muted text-muted-foreground border-border";
   }
 }

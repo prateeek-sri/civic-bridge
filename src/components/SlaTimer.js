@@ -1,11 +1,11 @@
 export function getSlaColor(createdAt) {
-  if (!createdAt) return "text-slate-500";
+  if (!createdAt) return "text-muted-foreground";
   const now = new Date();
   const created = new Date(createdAt);
   const hours = (now - created) / (1000 * 60 * 60);
-  if (hours < 24) return "text-green-600";
-  if (hours < 48) return "text-yellow-600";
-  return "text-red-600";
+  if (hours < 24) return "text-green-600 dark:text-green-400";
+  if (hours < 48) return "text-yellow-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 export function formatSlaDuration(createdAt) {
@@ -23,7 +23,7 @@ export function formatSlaDuration(createdAt) {
 
 export default function SlaTimer({ createdAt, resolvedAt, className = "" }) {
   const isResolved = resolvedAt || false;
-  const colorClass = isResolved ? "text-slate-500" : getSlaColor(createdAt);
+  const colorClass = isResolved ? "text-muted-foreground" : getSlaColor(createdAt);
   const text = isResolved
     ? "Resolved"
     : formatSlaDuration(createdAt);
