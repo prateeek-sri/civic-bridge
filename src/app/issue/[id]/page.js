@@ -232,7 +232,7 @@ export default function IssueDetailPage() {
               </label>
               {!user && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Log in to mark that you're satisfied with the resolution.
+                  Log in to mark that you&apos;re satisfied with the resolution.
                 </p>
               )}
             </div>
