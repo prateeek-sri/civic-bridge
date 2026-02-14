@@ -26,6 +26,7 @@ const issueSchema = new mongoose.Schema({
   resolvedAt: { type: Date, default: null },
   resolutionImage: { type: String, default: null },
   statusHistory: [statusHistorySchema],
+  satisfiedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 export default mongoose.models.Issue || mongoose.model("Issue", issueSchema);
