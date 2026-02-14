@@ -62,4 +62,7 @@ Transparent community–government feedback platform. Residents report civic iss
 
 
 
-[![Watch the video](https://drive.google.com/file/d/1-GuBlgRDObsZDbQ1jSMsyai6tgAPLsLR/view?usp=drive_link)](https://drive.google.com/file/d/1fgshd3TQVM4TIMREs79oHUclmjMztxcf/view?usp=sharing)
+[![Watch the video](https://drive.google.com/uc?export=view&id=1-GuBlgRDObsZDbQ1jSMsyai6tgAPLsLR)](https://drive.google.com/file/d/1fgshd3TQVM4TIMREs79oHUclmjMztxcf/view?usp=sharing)
+
+
+
