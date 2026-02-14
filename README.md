@@ -49,6 +49,11 @@ Transparent community–government feedback platform. Residents report civic iss
 2. Set environment variables: `MONGODB_URI`, `SESSION_SECRET`.
 3. Deploy.
 
+
+
+
+[![Watch the video](https://drive.google.com/file/d/1-GuBlgRDObsZDbQ1jSMsyai6tgAPLsLR/view?usp=drive_link)](https://drive.google.com/file/d/1fgshd3TQVM4TIMREs79oHUclmjMztxcf/view?usp=sharing)
+
 ## Features
 
 - **Auth**: Register (resident/official), login, session in MongoDB, HTTP-only cookie, 7-day expiry.
