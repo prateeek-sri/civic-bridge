@@ -20,6 +20,7 @@ export async function GET(request, { params }) {
     }
 
     const upvoteIds = (issue.upvotes || []).map((id) => id.toString());
+    const satisfiedIds = (issue.satisfiedBy || []).map((id) => id.toString());
     const serialized = {
       ...issue,
       _id: issue._id.toString(),
@@ -32,6 +33,7 @@ export async function GET(request, { params }) {
         : null,
       upvoteCount: upvoteIds.length,
       upvotes: upvoteIds,
+      satisfiedBy: satisfiedIds,
       statusHistory: (issue.statusHistory || []).map((h) => ({
         ...h,
         updatedBy: h.updatedBy

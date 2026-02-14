@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { Check, CheckCircle2 } from "lucide-react";
 import SlaTimer from "@/components/SlaTimer";
 
 const IssueLocationMap = dynamic(
@@ -31,6 +32,7 @@ export default function IssueDetailPage() {
   const [issue, setIssue] = useState(null);
   const [user, setUser] = useState(null);
   const [upvoting, setUpvoting] = useState(false);
+  const [satisfiedLoading, setSatisfiedLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/session")
@@ -48,6 +50,30 @@ export default function IssueDetailPage() {
 
   const hasUpvoted = user && issue && (issue.upvotes || []).includes(user.userId);
   const upvoteCount = issue ? (issue.upvoteCount ?? (issue.upvotes || []).length) : 0;
+  const isResolvedOrVerified =
+    issue?.status === "Resolved" || issue?.status === "Verified";
+  const hasMarkedSatisfied =
+    user && issue && (issue.satisfiedBy || []).includes(user.userId);
+
+  async function handleSatisfiedToggle() {
+    if (!user || !issue || satisfiedLoading || !isResolvedOrVerified) return;
+    setSatisfiedLoading(true);
+    try {
+      const res = await fetch(`/api/issues/${params.id}/satisfied`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIssue((prev) => ({
+          ...prev,
+          satisfiedBy: data.satisfiedBy || [],
+        }));
+      }
+    } finally {
+      setSatisfiedLoading(false);
+    }
+  }
 
   async function handleUpvote() {
     if (!user || hasUpvoted || upvoting) return;
@@ -171,6 +197,46 @@ export default function IssueDetailPage() {
               </div>
             ))}
           </div>
+
+          {isResolvedOrVerified && (
+            <div className="mt-6 pt-4 border-t border-border">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <span
+                  role="checkbox"
+                  tabIndex={0}
+                  aria-checked={hasMarkedSatisfied}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSatisfiedToggle();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleSatisfiedToggle();
+                    }
+                  }}
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+                    hasMarkedSatisfied
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "border-input bg-background group-hover:border-primary/50"
+                  } ${satisfiedLoading ? "opacity-60 pointer-events-none" : ""}`}
+                >
+                  {hasMarkedSatisfied && <Check className="h-3 w-3" strokeWidth={3} />}
+                </span>
+                <span className="text-sm font-medium text-foreground">
+                  {hasMarkedSatisfied ? "I'm satisfied with the resolution" : "Mark as satisfied with the resolution"}
+                </span>
+                {hasMarkedSatisfied && (
+                  <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 shrink-0" />
+                )}
+              </label>
+              {!user && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Log in to mark that you're satisfied with the resolution.
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

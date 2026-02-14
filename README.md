@@ -49,8 +49,20 @@ Transparent community–government feedback platform. Residents report civic iss
 2. Set environment variables: `MONGODB_URI`, `SESSION_SECRET`.
 3. Deploy.
 
+
+
+
+
 ## Features
 
 - **Auth**: Register (resident/official), login, session in MongoDB, HTTP-only cookie, 7-day expiry.
 - **Issues**: Submit (resident), list with filters/sort, detail with status timeline, SLA timer (green &lt;24h, yellow 24–48h, red 48h+), upvote (once per user).
 - **Officials**: Update status (state machine), add notes, upload resolution image; analytics (totals, open, resolved, avg resolution time, top category, trending).
+
+
+
+
+[![Watch the video](https://drive.google.com/uc?export=view&id=1-GuBlgRDObsZDbQ1jSMsyai6tgAPLsLR)](https://drive.google.com/file/d/1fgshd3TQVM4TIMREs79oHUclmjMztxcf/view?usp=sharing)
+
+
+[Deployment Link:](https://cibi-beige.vercel.app/)
