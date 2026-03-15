@@ -56,7 +56,7 @@ Transparent community–government feedback platform. Residents report civic iss
 ## Features
 
 - **Auth**: Register (resident/official), login, session in MongoDB, HTTP-only cookie, 7-day expiry.
-- **Issues**: Submit (resident), list with filters/sort, detail with status timeline, SLA timer (green &lt;24h, yellow 24–48h, red 48h+), upvote (once per user).
+- **Issues**: Submit (resident), list with filters/sort, detail with status timeline, SLA timer (green &lt;24h, yellow 24–48h, red 48h+), upvote (once per user),mark completed(Once the issue is resolved).
 - **Officials**: Update status (state machine), add notes, upload resolution image; analytics (totals, open, resolved, avg resolution time, top category, trending).
 
 
