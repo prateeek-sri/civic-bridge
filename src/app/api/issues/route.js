@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import Issue from "@/models/Issue";
 import { getSessionFromCookie } from "@/lib/auth";
 import { reverseGeocode } from "@/lib/geocode";
+import { uploadImage } from "@/lib/upload";
 
 export async function GET(request) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request) {
 
     let sortOption = { createdAt: -1 };
     if (sort === "oldest") sortOption = { createdAt: 1 };
-    if (sort === "upvotes") sortOption = { upvotes: -1, createdAt: -1 };
+    if (sort === "upvotes") sortOption = { upvoteCount: -1, createdAt: -1 };
 
     const issues = await Issue.find(filter)
       .sort(sortOption)
@@ -38,37 +39,9 @@ export async function GET(request) {
       ...i,
       _id: i._id.toString(),
       createdBy: i.createdBy ? { _id: i.createdBy._id.toString(), name: i.createdBy.name } : null,
-      upvoteCount: (i.upvotes || []).length,
-      upvotes: undefined,
+      upvoteCount: i.upvoteCount !== undefined ? i.upvoteCount : (i.upvotes || []).length,
+      upvotes: undefined, // Drop the massive array to save JSON bandwidth
     }));
-
-    // Backfill city/state for issues with lat/lng but no city/state (Nominatim: 1 req/sec)
-    const needsBackfill = withCounts.filter(
-      (i) =>
-        i.location?.lat != null &&
-        i.location?.lng != null &&
-        !i.location?.city &&
-        !i.location?.state
-    );
-    const MAX_BACKFILL_PER_REQUEST = 5;
-    for (let idx = 0; idx < Math.min(needsBackfill.length, MAX_BACKFILL_PER_REQUEST); idx++) {
-      const issue = needsBackfill[idx];
-      const geo = await reverseGeocode(issue.location.lat, issue.location.lng);
-      if (geo.city || geo.state) {
-        await Issue.updateOne(
-          { _id: issue._id },
-          { $set: { "location.city": geo.city, "location.state": geo.state } }
-        );
-        const match = withCounts.find((w) => w._id === issue._id);
-        if (match && match.location) {
-          match.location.city = geo.city;
-          match.location.state = geo.state;
-        }
-      }
-      if (idx < needsBackfill.length - 1) {
-        await new Promise((r) => setTimeout(r, 1100));
-      }
-    }
 
     return NextResponse.json(withCounts);
   } catch (err) {
@@ -123,12 +96,14 @@ export async function POST(request) {
       state = geo.state;
     }
 
+    const imageUrl = await uploadImage(image);
+
     const issue = await IssueModel.create({
       title: title.trim(),
       description: description.trim(),
       category: (category || "Other").trim(),
       severity,
-      image: image || null,
+      image: imageUrl,
       location: {
         lat: lat != null ? Number(lat) : null,
         lng: lng != null ? Number(lng) : null,

@@ -49,6 +49,38 @@ export async function GET() {
     const mostCommonCategory =
       categoryCounts.length > 0 ? categoryCounts[0]._id : "N/A";
 
+    // 6 Months Trends Aggregation
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
+    const monthlyTrends = await Issue.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          reported: { $sum: 1 },
+          resolved: {
+            $sum: {
+              $cond: [{ $in: ["$status", ["Resolved", "Verified"]] }, 1, 0]
+            }
+          }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const formattedTrends = monthlyTrends.map(t => ({
+      name: `${monthNames[t._id.month - 1]} ${t._id.year}`,
+      reported: t.reported,
+      resolved: t.resolved,
+    }));
+
     const trending = await Issue.find({ status: { $in: openStatuses } })
       .sort({ upvotes: -1 })
       .limit(1)
@@ -72,6 +104,8 @@ export async function GET() {
       avgResolutionTimeMs: Math.round(avgResolutionTimeMs),
       mostCommonCategory,
       trendingIssue,
+      categoryData: categoryCounts.map(c => ({ name: c._id, count: c.count })),
+      monthlyTrends: formattedTrends,
     });
   } catch (err) {
     console.error("Analytics error:", err);

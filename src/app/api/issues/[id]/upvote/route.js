@@ -29,13 +29,18 @@ export async function POST(request, { params }) {
       );
     }
 
-    upvotes.push(userId);
-    issue.upvotes = upvotes;
-    await issue.save();
+    const updatedIssue = await Issue.findByIdAndUpdate(
+      id,
+      {
+        $push: { upvotes: userId },
+        $inc: { upvoteCount: 1 }
+      },
+      { new: true }
+    );
 
     return NextResponse.json({
       success: true,
-      upvoteCount: upvotes.length,
+      upvoteCount: updatedIssue.upvoteCount,
     });
   } catch (err) {
     console.error("Upvote error:", err);

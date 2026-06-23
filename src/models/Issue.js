@@ -21,12 +21,21 @@ const issueSchema = new mongoose.Schema({
   },
   status: { type: String, required: true },
   upvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  upvoteCount: { type: Number, default: 0 },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   createdAt: { type: Date, default: Date.now },
   resolvedAt: { type: Date, default: null },
   resolutionImage: { type: String, default: null },
   statusHistory: [statusHistorySchema],
   satisfiedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  department: { type: String, default: null },
 });
+
+// Performance Indexes
+issueSchema.index({ status: 1, createdAt: -1 });
+issueSchema.index({ category: 1, createdAt: -1 });
+issueSchema.index({ severity: 1, createdAt: -1 });
+issueSchema.index({ upvoteCount: -1, createdAt: -1 });
 
 export default mongoose.models.Issue || mongoose.model("Issue", issueSchema);

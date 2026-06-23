@@ -91,7 +91,7 @@ export default function Nav() {
   return (
     <header className="sticky top-4 z-50 w-full">
       <div className="mx-auto mt-2 max-w-7xl px-4">
-        <div className="flex h-14 items-center justify-between rounded-full bg-card/80 dark:bg-card/90 border border-border backdrop-blur-md px-6 shadow-sm">
+        <div className="flex h-14 items-center justify-between rounded-full bg-background/80 border border-white/5 backdrop-blur-md px-6 shadow-sm">
           <Link
             href="/"
             className="font-extrabold text-lg tracking-tight text-foreground"
@@ -121,15 +121,7 @@ export default function Nav() {
           )}
 
           <div className="flex items-center gap-3">
-            {/* Theme toggle */}
-            <button
-              type="button"
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
+            {/* Removed theme toggle for single theme mode */}
 
            
 

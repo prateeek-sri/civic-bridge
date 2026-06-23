@@ -77,18 +77,14 @@ export default function DashboardPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-white">
           Public Dashboard
         </h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-slate-400">
           Track civic issues reported by the community
         </p>
       </div>
-      <div className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <SlidersHorizontal className="h-4 w-4" />
-          Filters
-        </div>
+      <div className="mb-6 flex flex-col gap-3 rounded-xl bg-[#13131A] border border-white/5 p-3 sm:flex-row sm:items-center justify-between">
         <div className="flex flex-1 flex-wrap gap-3">
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-[180px]">
@@ -142,19 +138,26 @@ export default function DashboardPage() {
             </SelectContent>
           </Select>
         </div>
-        {(category !== "all" || severity !== "all" || status !== "all") && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setCategory("all");
-              setSeverity("all");
-              setStatus("all");
-            }}
-          >
-            Clear
+        <div className="flex items-center gap-2">
+          {(category !== "all" || severity !== "all" || status !== "all") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setCategory("all");
+                setSeverity("all");
+                setStatus("all");
+              }}
+              className="text-slate-500 hover:text-slate-700"
+            >
+              Clear
+            </Button>
+          )}
+          <Button variant="outline" className="bg-[#0B0B0F] border-white/10 text-white hover:bg-white/5 gap-2 font-medium">
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters
           </Button>
-        )}
+        </div>
       </div>
 
       {isLoading ? (
@@ -170,12 +173,12 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          <p className="mb-4 text-sm text-muted-foreground  tracking-tight ">
+          <p className="mb-4 text-sm text-slate-400 tracking-tight">
             {issues.length} total reports found
           </p>
 
-          {/* WIDE GRID: 2 columns on desktop forces the cards to be wide */}
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+          {/* WIDE GRID: 3 columns on desktop for vertical cards */}
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {issues.map((issue) => (
               <IssueCard
                 key={issue._id}

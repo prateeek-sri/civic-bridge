@@ -22,6 +22,46 @@ const STATUS_COLORS = {
 
 const STATUS_OPTIONS = ["Submitted", "Acknowledged", "Assigned", "In Progress", "Resolved", "Verified"];
 
+function MonthlyTrendsChart({ trends }) {
+  if (!trends || trends.length === 0) return (
+    <div className="h-48 flex items-center justify-center text-xs text-muted-foreground">
+      No historical trend data available.
+    </div>
+  );
+  const maxVal = Math.max(...trends.map(t => Math.max(t.reported, t.resolved, 1)), 5);
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-4 text-[10px] font-semibold tracking-wide uppercase text-muted-foreground">
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-500 rounded-sm" /> Reported</span>
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-emerald-500 rounded-sm" /> Resolved</span>
+      </div>
+      <div className="h-48 flex items-end gap-3 border-b border-l border-border pl-2 pb-2">
+        {trends.map((item, idx) => {
+          const reportedHeight = (item.reported / maxVal) * 100;
+          const resolvedHeight = (item.resolved / maxVal) * 100;
+          return (
+            <div key={idx} className="flex-1 flex flex-col items-center gap-1 h-full justify-end group">
+              <div className="w-full flex gap-1 items-end h-[85%] px-1">
+                <div 
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 rounded-t transition-all duration-300"
+                  style={{ height: `${reportedHeight}%` }}
+                  title={`Reported: ${item.reported}`}
+                />
+                <div 
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 rounded-t transition-all duration-300"
+                  style={{ height: `${resolvedHeight}%` }}
+                  title={`Resolved: ${item.resolved}`}
+                />
+              </div>
+              <span className="text-[9px] text-muted-foreground text-center truncate w-full" title={item.name}>{item.name}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function OfficialDashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -33,6 +73,19 @@ export default function OfficialDashboardPage() {
   const [note, setNote] = useState("");
   const [resolutionImage, setResolutionImage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [officials, setOfficials] = useState([]);
+  const [assignedTo, setAssignedTo] = useState("");
+  const [department, setDepartment] = useState("");
+
+  useEffect(() => {
+    if (!user || user.role !== "official") return;
+    fetch("/api/officials")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setOfficials(data);
+      })
+      .catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     fetch("/api/auth/session")
@@ -75,14 +128,16 @@ export default function OfficialDashboardPage() {
   }
 
   async function handleUpdateStatus(issueId) {
-    if (!newStatus) return;
+    if (!newStatus && !assignedTo && !department) return;
     const res = await fetch(`/api/issues/${issueId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        status: newStatus,
+        status: newStatus || undefined,
         note: note.trim() || undefined,
         resolutionImage: resolutionImage || undefined,
+        assignedTo: assignedTo || null,
+        department: department.trim() || null,
       }),
     });
     if (res.ok) {
@@ -90,6 +145,8 @@ export default function OfficialDashboardPage() {
       setNewStatus("");
       setNote("");
       setResolutionImage("");
+      setAssignedTo("");
+      setDepartment("");
       loadIssues();
       loadAnalytics();
     }
@@ -161,6 +218,43 @@ export default function OfficialDashboardPage() {
         </div>
       )}
 
+      {analytics && (
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
+            <h3 className="text-sm font-bold text-foreground mb-4">Monthly Activity Trends</h3>
+            <MonthlyTrendsChart trends={analytics.monthlyTrends} />
+          </div>
+          <div className="bg-card rounded-xl border border-border p-6 shadow-sm flex flex-col">
+            <h3 className="text-sm font-bold text-foreground mb-4">Issue Breakdown by Category</h3>
+            <div className="space-y-4 max-h-[192px] overflow-y-auto pr-1 flex-1">
+              {analytics.categoryData && analytics.categoryData.length > 0 ? (
+                (() => {
+                  const maxCount = Math.max(...analytics.categoryData.map(d => d.count), 1);
+                  return analytics.categoryData.map((item, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex justify-between text-xs font-medium text-foreground">
+                        <span>{item.name}</span>
+                        <span className="text-muted-foreground">{item.count}</span>
+                      </div>
+                      <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-blue-500 rounded-full transition-all duration-500" 
+                          style={{ width: `${(item.count / maxCount) * 100}%` }} 
+                        />
+                      </div>
+                    </div>
+                  ));
+                })()
+              ) : (
+                <div className="h-48 flex items-center justify-center text-xs text-muted-foreground">
+                  No category data available.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-4 flex items-center gap-4">
         <label className="text-sm font-medium text-foreground">Filter by status</label>
         <select
@@ -202,6 +296,16 @@ export default function OfficialDashboardPage() {
                       {issue.status}
                     </span>
                     <span className="text-xs text-muted-foreground">👍 {issue.upvoteCount || 0}</span>
+                    {issue.department && (
+                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded">
+                        🏢 {issue.department}
+                      </span>
+                    )}
+                    {issue.assignedTo && (
+                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded">
+                        👤 Assigned: {issue.assignedTo.name || issue.assignedTo}
+                      </span>
+                    )}
                   </div>
                   <SlaTimer createdAt={issue.createdAt} resolvedAt={issue.resolvedAt} className="text-sm mt-1" />
                 </div>
@@ -217,6 +321,23 @@ export default function OfficialDashboardPage() {
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
+                      <select
+                        value={assignedTo}
+                        onChange={(e) => setAssignedTo(e.target.value)}
+                        className="border border-input bg-background rounded px-2 py-1.5 text-sm"
+                      >
+                        <option value="">Unassigned</option>
+                        {officials.map((o) => (
+                          <option key={o._id} value={o._id}>{o.name}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        placeholder="Department (e.g. Roads)"
+                        value={department}
+                        onChange={(e) => setDepartment(e.target.value)}
+                        className="border border-input bg-background rounded px-2 py-1.5 text-sm"
+                      />
                       <input
                         type="text"
                         placeholder="Note (optional)"
@@ -260,6 +381,8 @@ export default function OfficialDashboardPage() {
                         setNewStatus(issue.status);
                         setNote("");
                         setResolutionImage("");
+                        setAssignedTo(issue.assignedTo?._id || issue.assignedTo || "");
+                        setDepartment(issue.department || "");
                       }}
                       className="bg-primary text-primary-foreground px-3 py-1.5 rounded text-sm font-medium hover:bg-primary/90"
                     >
