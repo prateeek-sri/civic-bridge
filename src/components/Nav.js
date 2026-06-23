@@ -80,7 +80,7 @@ export default function Nav() {
 
   const isDark = resolvedTheme === "dark" || theme === "dark";
   const navLinkClass = (path) =>
-    `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+    `px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-95 ${
       pathname === path
         ? "text-primary bg-primary/10"
         : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -94,7 +94,7 @@ export default function Nav() {
         <div className="flex h-14 items-center justify-between rounded-full bg-background/80 border border-white/5 backdrop-blur-md px-6 shadow-sm">
           <Link
             href="/"
-            className="font-extrabold text-lg tracking-tight text-foreground"
+            className="font-extrabold text-lg tracking-tight text-foreground hover:scale-105 active:scale-95 transition-transform"
           >
             <span className="bg-gradient-to-r from-blue-500 to-emerald-500 bg-clip-text text-transparent">
               CivicBridge
@@ -129,7 +129,7 @@ export default function Nav() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 border-border rounded-full px-2 sm:px-4 hover:bg-accent"
+                  className="flex items-center gap-2 border-border rounded-full px-2 sm:px-4 hover:bg-accent transition-all active:scale-95"
                 >
                   <Avatar className="size-7">
                     <AvatarImage src={user?.image} />
@@ -194,7 +194,7 @@ export default function Nav() {
                 <button
                   type="button"
                   onClick={() => setMobileOpen(!mobileOpen)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-foreground hover:bg-accent transition-all active:scale-95"
                   aria-label="Menu"
                 >
                   <Menu className="h-5 w-5" />

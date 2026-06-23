@@ -182,7 +182,7 @@ export default function IssueDetailPage() {
 
       {/* 2. Back Link */}
       <div>
-        <Link href="/dashboard" className="text-blue-500 hover:text-blue-400 text-sm font-semibold flex items-center gap-1 w-fit">
+        <Link href="/dashboard" className="text-blue-500 hover:text-blue-400 active:scale-95 transition-transform inline-flex text-sm font-semibold items-center gap-1 w-fit">
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </Link>
       </div>
@@ -196,10 +196,10 @@ export default function IssueDetailPage() {
           <button
             onClick={handleUpvote}
             disabled={!user || hasUpvoted || upvoting}
-            className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1.5 ${
+            className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center gap-1.5 ${
               hasUpvoted
                 ? "bg-[#13131A] border border-white/10 text-slate-500 cursor-default"
-                : "bg-[#2563EB] hover:bg-blue-600 text-white"
+                : "bg-[#2563EB] hover:bg-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/20"
             }`}
           >
             {upvoting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />} 
@@ -257,8 +257,8 @@ export default function IssueDetailPage() {
               {steps.map((step, idx) => (
                 <div key={idx} className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active ${step.active ? "opacity-100" : "opacity-40"}`}>
                   {/* Icon */}
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 bg-[#13131A] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow transition-all duration-300 ${
-                    step.active ? "border-blue-500 text-blue-500" : "border-slate-700 text-slate-600"
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 bg-[#13131A] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow transition-all duration-300 hover:scale-110 cursor-default ${
+                    step.active ? "border-blue-500 text-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.3)]" : "border-slate-700 text-slate-600"
                   }`}>
                     {step.active ? <CheckCircle2 className="w-5 h-5" /> : <CalendarClock className="w-5 h-5" />}
                   </div>
@@ -281,9 +281,9 @@ export default function IssueDetailPage() {
                 <button
                   onClick={handleSatisfiedToggle}
                   disabled={!user || satisfiedLoading}
-                  className={`w-full py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                  className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 ${
                     hasMarkedSatisfied
-                      ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
+                      ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]"
                       : "bg-[#0B0B0F] border border-white/10 text-slate-300 hover:bg-white/5"
                   }`}
                 >
@@ -311,7 +311,7 @@ export default function IssueDetailPage() {
                   <button
                     type="submit"
                     disabled={submittingComment || !newComment.trim()}
-                    className="bg-[#2563EB] hover:bg-blue-600 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-bold tracking-wide transition"
+                    className="bg-[#2563EB] hover:bg-blue-600 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-bold tracking-wide transition-all active:scale-95"
                   >
                     {submittingComment ? "Posting..." : "Post Comment"}
                   </button>

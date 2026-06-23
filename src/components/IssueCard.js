@@ -49,7 +49,7 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
   };
 
   return (
-    <div className="flex flex-col bg-[#13131A] rounded-xl border border-white/5 overflow-hidden shadow-lg hover:border-white/20 transition-all">
+    <div className="group flex flex-col bg-[#13131A] rounded-xl border border-white/5 overflow-hidden shadow-lg hover:border-white/20 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
       {/* Top: Image */}
       <div className="relative w-full h-40 bg-slate-900 overflow-hidden shrink-0">
         {issue.image ? (
@@ -58,7 +58,7 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
             alt={issue.title}
             fill
             priority={true}
-            className="object-cover object-center"
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-slate-600">
@@ -111,7 +111,7 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
 
         {/* Bottom: Buttons */}
         <div className="grid grid-cols-2 gap-3 mt-auto">
-          <Button asChild className="w-full bg-[#2563EB] hover:bg-blue-600 text-white rounded-lg font-medium text-sm h-9">
+          <Button asChild className="w-full bg-[#2563EB] hover:bg-blue-600 active:scale-95 text-white rounded-lg font-medium text-sm h-9 transition-all">
             <Link href={`/issue/${issue._id || ''}`}>
               View Details
             </Link>
@@ -120,7 +120,7 @@ export function IssueCard({ issue, maxUpvotes = 0 }) {
             variant="outline" 
             onClick={handleUpvote}
             disabled={isUpvoting || hasUpvoted}
-            className="w-full bg-transparent border-[#2563EB] text-[#3B82F6] hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium text-sm h-9 flex items-center justify-center gap-1"
+            className="w-full bg-transparent border-[#2563EB] text-[#3B82F6] hover:bg-blue-900/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium text-sm h-9 flex items-center justify-center gap-1 transition-all"
           >
             {isUpvoting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />}
             {hasUpvoted ? "Upvoted" : "Upvote"} ({upvoteCount})
