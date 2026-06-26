@@ -159,7 +159,7 @@ export default function Home() {
               </div>
               <div className="relative z-10 max-w-2xl">
                 <p className="text-xl md:text-3xl font-medium text-white mb-6 leading-tight">
-                  "CivicBridge transformed how we respond to constituent needs. Response times dropped by 40%, and our community feels more heard and engaged than ever before."
+                  &quot;CivicBridge transformed how we respond to constituent needs. Response times dropped by 40%, and our community feels more heard and engaged than ever before.&quot;
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20">
