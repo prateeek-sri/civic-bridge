@@ -4,6 +4,7 @@ import Issue from "@/models/Issue";
 import { getSessionFromCookie } from "@/lib/auth";
 import { reverseGeocode } from "@/lib/geocode";
 import { uploadImage } from "@/lib/upload";
+import redis from "@/lib/redis";
 
 export async function GET(request) {
   try {
@@ -18,6 +19,18 @@ export async function GET(request) {
     const severity = searchParams.get("severity");
     const status = searchParams.get("status");
     const sort = searchParams.get("sort") || "newest";
+
+    const cacheKey = `issues:${category || 'all'}:${severity || 'all'}:${status || 'all'}:${sort}`;
+    if (redis) {
+      try {
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+          return NextResponse.json(JSON.parse(cached));
+        }
+      } catch (err) {
+        console.error("Redis get error:", err);
+      }
+    }
 
     await connectDB();
 
@@ -42,6 +55,15 @@ export async function GET(request) {
       upvoteCount: i.upvoteCount !== undefined ? i.upvoteCount : (i.upvotes || []).length,
       upvotes: undefined, // Drop the massive array to save JSON bandwidth
     }));
+
+    if (redis) {
+      try {
+        // Cache issues for 60 seconds
+        await redis.set(cacheKey, JSON.stringify(withCounts), "EX", 60);
+      } catch (err) {
+        console.error("Redis set error:", err);
+      }
+    }
 
     return NextResponse.json(withCounts);
   } catch (err) {
@@ -122,6 +144,18 @@ export async function POST(request) {
         },
       ],
     });
+
+    if (redis) {
+      try {
+        // Invalidate issues cache so the new issue is immediately visible
+        const keys = await redis.keys('issues:*');
+        if (keys.length > 0) {
+          await redis.del(...keys);
+        }
+      } catch (err) {
+        console.error("Redis cache invalidation error:", err);
+      }
+    }
 
     return NextResponse.json({
       success: true,
